@@ -1,9 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Receipt, Package, Sparkles } from "lucide-react";
+import { LayoutDashboard, Receipt, Package, Sparkles, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/quick", label: "Precificar", icon: Zap },
   { to: "/fixed-costs", label: "Custos Fixos", icon: Receipt },
   { to: "/products", label: "Produtos", icon: Package },
 ] as const;
