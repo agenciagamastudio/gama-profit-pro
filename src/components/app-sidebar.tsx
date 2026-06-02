@@ -3,8 +3,8 @@ import { LayoutDashboard, Receipt, Package, Sparkles, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/quick", label: "Precificar", icon: Zap },
+  { to: "/", label: "Precificar", icon: Zap },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/fixed-costs", label: "Custos Fixos", icon: Receipt },
   { to: "/products", label: "Produtos", icon: Package },
 ] as const;
