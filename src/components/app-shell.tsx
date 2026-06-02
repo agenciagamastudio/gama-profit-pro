@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { AppSidebar, MobileNav } from "./app-sidebar";
+import { ThemeToggle } from "./theme-toggle";
 
 export function AppShell({ title, subtitle, action, children }: {
   title: string;
@@ -19,7 +20,10 @@ export function AppShell({ title, subtitle, action, children }: {
                 <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
               )}
             </div>
-            {action}
+            <div className="flex items-center gap-2">
+              {action}
+              <ThemeToggle />
+            </div>
           </div>
         </header>
         <div className="max-w-6xl mx-auto px-5 md:px-8 py-8 pb-28 md:pb-12">
