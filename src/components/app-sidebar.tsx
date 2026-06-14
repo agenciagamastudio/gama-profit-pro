@@ -46,7 +46,7 @@ export function AppSidebar() {
       <div className="mt-auto p-4">
         <div className="rounded-2xl border border-border p-4 bg-card">
           <div className="text-xs text-muted-foreground">Margem saudável</div>
-          <div className="text-2xl font-semibold mt-1" style={{ color: "var(--accent)" }}>
+          <div className="text-2xl font-semibold mt-1 text-accent">
             ≥ 20%
           </div>
           <p className="text-xs text-muted-foreground mt-2">
