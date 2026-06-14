@@ -29,7 +29,7 @@ function Stat({ label, value, hint, icon: Icon, accent }: {
         <Icon className="h-4 w-4" />
       </div>
       <div
-        className={cn("mt-3 text-3xl font-semibold tracking-tight", accent && "text-[color:var(--accent)]")}
+        className={cn("mt-3 text-3xl font-semibold tracking-tight", accent && "text-accent")}
       >
         {value}
       </div>
@@ -71,7 +71,7 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         <section className="glass-card rounded-2xl p-5">
           <header className="flex items-center gap-2 mb-4">
-            <TrendingUp className="h-4 w-4 text-[color:var(--accent)]" />
+            <TrendingUp className="h-4 w-4 text-accent" />
             <h2 className="font-medium">Mais lucrativos</h2>
           </header>
           {top.length === 0 ? (
@@ -85,7 +85,7 @@ function Dashboard() {
                     <div className="text-xs text-muted-foreground">{p.sku || p.category}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-[color:var(--accent)]">{fmtPct(pr.realMarginPct)}</div>
+                    <div className="font-semibold text-accent">{fmtPct(pr.realMarginPct)}</div>
                     <div className="text-xs text-muted-foreground">{fmtBRL(pr.netProfit)}</div>
                   </div>
                 </li>

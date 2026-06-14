@@ -113,7 +113,7 @@ function FixedCostsPage() {
         <div className="grid grid-cols-[2fr_1fr_1fr_auto] gap-3 px-5 py-4 bg-secondary/50">
           <div className="font-medium">Total</div>
           <div></div>
-          <div className="text-right font-semibold text-lg text-[color:var(--accent)]">{fmtBRL(total)}</div>
+          <div className="text-right font-semibold text-lg text-accent">{fmtBRL(total)}</div>
           <div></div>
         </div>
       </div>

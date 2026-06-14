@@ -263,3 +263,46 @@
 }
 .fade-up { animation: fadeUp 0.6s var(--motion-easing-cinematic) both; }
 .pulse-green { animation: pulseGreen 3s ease-in-out infinite; }
+
+/* ═══ TOKENIZED COMPONENT UTILITIES ═══ */
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: 9999px;
+  transition: opacity 200ms ease;
+}
+.btn-accent:hover { opacity: 0.9; background-color: var(--accent); }
+
+.brand-dot { color: var(--accent); }
+
+/* Volumetric orb backdrops used on the pricer landing */
+.orb-primary,
+.orb-secondary {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.orb-primary {
+  top: -8rem;
+  left: -8rem;
+  height: 680px;
+  width: 680px;
+  filter: blur(20px);
+  background: radial-gradient(circle at 35% 35%,
+    rgba(var(--gama-green-rgb), 0.55) 0%,
+    rgba(var(--gama-green-rgb), 0.22) 28%,
+    rgba(var(--gama-green-rgb), 0.06) 55%,
+    transparent 72%);
+}
+.orb-secondary {
+  top: 10rem;
+  right: -10rem;
+  height: 520px;
+  width: 520px;
+  opacity: 0.7;
+  filter: blur(40px);
+  background: radial-gradient(circle at 60% 50%,
+    rgba(var(--gama-green-rgb), 0.30) 0%,
+    rgba(var(--gama-green-rgb), 0.10) 40%,
+    transparent 70%);
+}

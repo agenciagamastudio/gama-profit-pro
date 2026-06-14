@@ -89,7 +89,7 @@ function ProductsPage() {
                   "text-sm font-semibold",
                   pr.warning === "loss" ? "text-destructive" :
                   pr.warning === "low" ? "text-[color:var(--warning)]" :
-                  "text-[color:var(--accent)]"
+                  "text-accent"
                 )}>
                   {fmtPct(pr.realMarginPct)}
                 </div>
@@ -306,7 +306,7 @@ function ProductWizard({
                     "text-2xl font-semibold",
                     pricing.warning === "loss" ? "text-destructive" :
                     pricing.warning === "low" ? "text-[color:var(--warning)]" :
-                    "text-[color:var(--accent)]"
+                    "text-accent"
                   )}>
                     {fmtPct(pricing.realMarginPct)}
                   </div>
