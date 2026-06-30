@@ -60,6 +60,7 @@ function HomePricer() {
               suggested={p.suggested}
               profit={p.profit}
               margin={p.margin}
+              setMargin={p.setMargin}
               onSave={p.save}
               onRestart={p.reset}
             />
