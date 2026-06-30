@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { uid, upsertProduct } from "@/lib/store";
-import { CATEGORIES, DEFAULT_MARGIN, type Costs } from "./types";
+import { CATEGORIES, DEFAULT_MARGIN, MAX_MARGIN, MIN_MARGIN, type Costs } from "./types";
 
 export function usePricer() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -9,13 +9,14 @@ export function usePricer() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0]);
   const [image, setImage] = useState<string | null>(null);
-  const margin = DEFAULT_MARGIN;
+  const [margin, setMargin] = useState(DEFAULT_MARGIN);
 
+  const clampedMargin = Math.min(Math.max(margin, MIN_MARGIN), MAX_MARGIN);
   const totalCost =
     (Number(costs.product) || 0) +
     (Number(costs.shipping) || 0) +
     (Number(costs.other) || 0);
-  const suggested = totalCost / (1 - margin / 100);
+  const suggested = totalCost / (1 - clampedMargin / 100);
   const profit = suggested - totalCost;
 
   const reset = () => {
@@ -24,6 +25,7 @@ export function usePricer() {
     setName("");
     setCategory(CATEGORIES[0]);
     setImage(null);
+    setMargin(DEFAULT_MARGIN);
   };
 
   const save = () => {
@@ -33,7 +35,7 @@ export function usePricer() {
       sku: "",
       category,
       costPrice: Number(costs.product) || 0,
-      desiredMargin: margin,
+      desiredMargin: clampedMargin,
       fixedAllocationPct: 0,
       variableCosts: [
         ...(Number(costs.shipping)
@@ -54,7 +56,7 @@ export function usePricer() {
     name, setName,
     category, setCategory,
     image, setImage,
-    margin,
+    margin, setMargin,
     totalCost, suggested, profit,
     reset, save,
   };
