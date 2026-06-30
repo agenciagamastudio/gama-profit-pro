@@ -101,14 +101,19 @@ function FixedCostsPage() {
                 onChange={(e) => updateFixedCost(fc.id, { value: Number(e.target.value) })}
                 className="border-0 shadow-none px-0 h-8 focus-visible:ring-0 text-right font-medium"
               />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removeFixedCost(fc.id)}
-                className="text-muted-foreground hover:text-destructive"
+              <ConfirmDelete
+                title="Excluir custo fixo"
+                description={`Tem certeza que deseja excluir "${fc.name}"? Esta ação não pode ser desfeita.`}
+                onConfirm={() => removeFixedCost(fc.id)}
               >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </ConfirmDelete>
             </div>
           ))
         )}
