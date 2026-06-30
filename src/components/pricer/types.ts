@@ -11,3 +11,6 @@ export const CATEGORIES = [
 ];
 
 export const DEFAULT_MARGIN = 30;
+export const MIN_MARGIN = 10;
+export const MAX_MARGIN = 100;
+

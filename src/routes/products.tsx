@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   removeProduct,
   uid,
   upsertProduct,
@@ -20,8 +27,9 @@ import {
   type VariableCost,
 } from "@/lib/store";
 import { computePricing, fmtBRL, fmtPct, sumFixedCosts } from "@/lib/pricing";
-import { Plus, Trash2, Pencil, AlertTriangle, Check } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertTriangle, Check, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/products")({
   head: () => ({ meta: [{ title: "Produtos — Gama PRESS" }] }),
@@ -98,14 +106,19 @@ function ProductsPage() {
                   <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-destructive"
-                    onClick={() => removeProduct(p.id)}
+                  <ConfirmDelete
+                    title="Excluir produto"
+                    description={`Tem certeza que deseja excluir "${p.name || "Produto sem nome"}"? Esta ação não pode ser desfeita.`}
+                    onConfirm={() => removeProduct(p.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </ConfirmDelete>
                 </div>
               </div>
             );
@@ -202,7 +215,28 @@ function ProductWizard({
                   onChange={(e) => update({ costPrice: Number(e.target.value) })}
                 />
               </Field>
-              <Field label={`Rateio de custo fixo (% de ${fmtBRL(totalFixed)})`}>
+              <Field
+                label={
+                  <span className="flex items-center gap-1">
+                    Rateio de custo fixo (% de {fmtBRL(totalFixed)})
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground">
+                            <HelpCircle className="h-3.5 w-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p>
+                            Percentual dos custos fixos mensais que você quer alocar para este produto.
+                            Ele aumenta o custo base e, portanto, o preço sugerido.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
+                }
+              >
                 <Input
                   type="number"
                   step="0.1"
@@ -358,7 +392,7 @@ function ProductWizard({
   );
 }
 
-function Field({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+function Field({ label, children, className }: { label: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <div className={cn("space-y-1.5", className)}>
       <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
