@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   removeProduct,
   uid,
   upsertProduct,
@@ -20,8 +27,9 @@ import {
   type VariableCost,
 } from "@/lib/store";
 import { computePricing, fmtBRL, fmtPct, sumFixedCosts } from "@/lib/pricing";
-import { Plus, Trash2, Pencil, AlertTriangle, Check } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertTriangle, Check, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/products")({
   head: () => ({ meta: [{ title: "Produtos — Gama PRESS" }] }),
