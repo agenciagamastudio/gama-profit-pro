@@ -84,7 +84,7 @@ describe("breakEvenUnits", () => {
 
 describe("helpers", () => {
   it("sums fixed costs", () => {
-    expect(sumFixedCosts([{ id: "1", name: "Aluguel", value: 1000 }, { id: "2", name: "Luz", value: 200 }])).toBe(1200);
+    expect(sumFixedCosts([{ id: "1", name: "Aluguel", value: 1000, category: "Estrutura" }, { id: "2", name: "Luz", value: 200, category: "Estrutura" }])).toBe(1200);
   });
 
   it("sums percent variable costs", () => {
