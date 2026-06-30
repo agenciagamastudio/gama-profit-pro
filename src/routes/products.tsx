@@ -215,7 +215,28 @@ function ProductWizard({
                   onChange={(e) => update({ costPrice: Number(e.target.value) })}
                 />
               </Field>
-              <Field label={`Rateio de custo fixo (% de ${fmtBRL(totalFixed)})`}>
+              <Field
+                label={
+                  <span className="flex items-center gap-1">
+                    Rateio de custo fixo (% de {fmtBRL(totalFixed)})
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground">
+                            <HelpCircle className="h-3.5 w-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p>
+                            Percentual dos custos fixos mensais que você quer alocar para este produto.
+                            Ele aumenta o custo base e, portanto, o preço sugerido.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
+                }
+              >
                 <Input
                   type="number"
                   step="0.1"
