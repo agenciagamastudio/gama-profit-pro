@@ -106,14 +106,19 @@ function ProductsPage() {
                   <Button variant="ghost" size="icon" onClick={() => setEditing(p)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-destructive"
-                    onClick={() => removeProduct(p.id)}
+                  <ConfirmDelete
+                    title="Excluir produto"
+                    description={`Tem certeza que deseja excluir "${p.name || "Produto sem nome"}"? Esta ação não pode ser desfeita.`}
+                    onConfirm={() => removeProduct(p.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </ConfirmDelete>
                 </div>
               </div>
             );
