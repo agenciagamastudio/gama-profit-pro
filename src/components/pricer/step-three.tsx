@@ -1,7 +1,9 @@
 import { Check, ImagePlus, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { fmtBRL, fmtPct } from "@/lib/pricing";
 import { Metric } from "./metric";
+import { MAX_MARGIN, MIN_MARGIN } from "./types";
 
 export function StepThree({
   name,
@@ -11,6 +13,7 @@ export function StepThree({
   suggested,
   profit,
   margin,
+  setMargin,
   onSave,
   onRestart,
 }: {
@@ -21,6 +24,7 @@ export function StepThree({
   suggested: number;
   profit: number;
   margin: number;
+  setMargin: (m: number) => void;
   onSave: () => void;
   onRestart: () => void;
 }) {
@@ -33,7 +37,7 @@ export function StepThree({
         Está pronto.
       </h2>
       <p className="text-muted-foreground mt-2">
-        Margem de {margin}% sobre o custo total.
+        Ajuste a margem abaixo e veja o preço recalcular em tempo real.
       </p>
 
       <article className="mt-8 glass-illuminated rounded-3xl overflow-hidden">
@@ -53,6 +57,24 @@ export function StepThree({
             <h3 className="text-xl md:text-2xl font-semibold tracking-tight mt-1">
               {name || "Produto sem nome"}
             </h3>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Margem desejada</span>
+                <span className="font-semibold text-accent">{fmtPct(margin)}</span>
+              </div>
+              <Slider
+                value={[margin]}
+                onValueChange={(v) => setMargin(v[0])}
+                min={MIN_MARGIN}
+                max={MAX_MARGIN}
+                step={1}
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground uppercase tracking-wider">
+                <span>{MIN_MARGIN}%</span>
+                <span>{MAX_MARGIN}%</span>
+              </div>
+            </div>
 
             <div className="mt-6">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">
