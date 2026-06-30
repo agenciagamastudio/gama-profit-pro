@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { ConfirmDelete } from "@/components/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addFixedCost, removeFixedCost, updateFixedCost, useStore } from "@/lib/store";
 import { fmtBRL, sumFixedCosts } from "@/lib/pricing";
 import { Plus, Trash2 } from "lucide-react";
+
 
 export const Route = createFileRoute("/fixed-costs")({
   head: () => ({ meta: [{ title: "Custos Fixos — Gama PRESS" }] }),
