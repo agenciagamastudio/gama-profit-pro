@@ -392,7 +392,7 @@ function ProductWizard({
   );
 }
 
-function Field({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+function Field({ label, children, className }: { label: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <div className={cn("space-y-1.5", className)}>
       <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
