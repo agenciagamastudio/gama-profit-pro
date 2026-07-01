@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Receipt, Package, Sparkles, Zap } from "lucide-react";
+import { LayoutDashboard, Receipt, Package, Sparkles, Zap, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth/auth-context";
 
 const items = [
   { to: "/", label: "Precificar", icon: Zap },
@@ -11,6 +12,7 @@ const items = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { user, signOut } = useAuth();
 
   return (
     <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
@@ -43,7 +45,7 @@ export function AppSidebar() {
           );
         })}
       </nav>
-      <div className="mt-auto p-4">
+      <div className="mt-auto p-4 space-y-3">
         <div className="rounded-2xl border border-border p-4 bg-card">
           <div className="text-xs text-muted-foreground">Margem saudável</div>
           <div className="text-2xl font-semibold mt-1 text-accent">
@@ -53,6 +55,16 @@ export function AppSidebar() {
             Acompanhe seus produtos em verde elétrico para garantir lucratividade.
           </p>
         </div>
+        {user && (
+          <button
+            onClick={() => void signOut()}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            <span className="truncate">{user.email}</span>
+            <span className="ml-auto shrink-0">Sair</span>
+          </button>
+        )}
       </div>
     </aside>
   );
