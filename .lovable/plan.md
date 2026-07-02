@@ -1,166 +1,102 @@
-# Plano de Melhorias — Gama PRESS
+# Plano — Documentação completa (Frontend + Backend) + GitHub
 
-## Resumo
-Este plano organiza melhorias por impacto e esforço, do maior ao menor ROI. Dividido em 6 pilares: Funcionalidades de Negócio, Persistência & Backend, UX/UI Polimento, Performance, SEO/Marketing e Qualidade de Código.
+## Sobre "criar no GitHub"
 
----
+Eu não tenho um botão para publicar num repositório do GitHub por conta própria. O que o Lovable faz é **sincronização bidirecional automática** com um repo GitHub que você conecta uma única vez:
 
-## 1. Funcionalidades de Negócio (Alto Impacto)
+1. Menu **+** (canto inferior esquerdo do chat) → **GitHub** → **Connect project**
+2. Autorizar o app Lovable no GitHub
+3. Escolher a organização/conta
+4. Clicar **Create Repository**
 
-### 1.1 Margem dinâmica no wizard de precificação
-**Problema:** O passo 3 usa margem fixa de 30% (`DEFAULT_MARGIN`). O usuário não pode ajustar.
-**Solução:** Adicionar um slider ou input no StepTwo/StepThree para definir margem desejada (ex: 20% a 100%). O preço sugerido recalcula em tempo real.
+A partir daí, **qualquer arquivo que eu criar no projeto** (incluindo a documentação abaixo) é enviado automaticamente para o repo. Não é preciso commit/push manual.
 
-### 1.2 Simulador reverso no wizard rápido
-**Problema:** O usuário só vê "preço sugerido". Não consegue testar: "se eu cobrar R$ X, qual minha margem?"
-**Solução:** No StepThree, adicionar um campo "Preço de venda desejado" que calcula e exibe a margem real resultante.
-
-### 1.3 Edição inline de produtos
-**Problema:** Para editar um produto, o usuário clica no ícone de lápis e abre um modal com 3 passos.
-**Solução:** Permitir edição rápida de nome, SKU e categoria diretamente na listagem de produtos (clica no campo, digita, Enter salva).
-
-### 1.4 Duplicar produto
-**Problema:** Produtos similares precisam ser recriados do zero.
-**Solução:** Botão "Duplicar" na listagem que clona o produto com novo ID.
-
-### 1.5 Filtros e busca no catálogo
-**Problema:** Com muitos produtos, a tabela fica difícil de navegar.
-**Solução:** Campo de busca por nome/SKU e filtro por categoria + ordenação por margem/lucro.
-
-### 1.6 Exportar dados (CSV/Excel)
-**Problema:** Os dados ficam presos no app.
-**Solução:** Botão "Exportar" no dashboard e na página de produtos para gerar CSV com produtos, custos e preços.
-
-### 1.7 Meta de vendas mensais (break-even real)
-**Problema:** `monthlyUnitsTarget` existe no estado mas não é usado na UI.
-**Solução:** Página/section onde o usuário define meta mensal de unidades e vê quantas precisa vender de cada produto para cobrir custos fixos.
+Portanto, meu plano é: **criar toda a documentação como arquivos no projeto**. Se você já conectou o GitHub, ela aparece lá em segundos. Se ainda não conectou, siga os 4 passos acima uma vez e o histórico inteiro (docs + código) sobe.
 
 ---
 
-## 2. Persistência & Backend (Alto Impacto)
+## Arquivos de documentação que vou criar
 
-### 2.1 Migrar de localStorage para banco de dados
-**Problema:** Dados salvos apenas no navegador. Perde trocando de dispositivo ou limpando cache.
-**Solução:** Ativar Lovable Cloud (PostgreSQL) e criar tabelas: `products`, `fixed_costs`, `user_settings`. Manter o store local como cache offline opcional.
+### 1. `README.md` (raiz) — porta de entrada
+- Descrição curta do Gama PRESS + screenshot/print da tela
+- Stack (TanStack Start, React 19, Vite 7, Tailwind v4, shadcn/ui, Radix)
+- Como rodar localmente (`bun install`, `bun dev`, `bun test`)
+- Scripts disponíveis
+- Estrutura de pastas (árvore resumida)
+- Links para os docs detalhados em `docs/`
 
-### 2.2 Autenticação de usuários
-**Problema:** Sem login, não há como sincronizar dados entre dispositivos.
-**Solução:** Login com email/senha ou Google via Lovable Cloud. Cada usuário vê apenas seus produtos (RLS).
+### 2. `docs/architecture.md` — visão geral
+- Diagrama ASCII do fluxo (rotas → componentes → store → pricing)
+- Convenções: file-based routing, tokens semânticos, `mem://` de memórias
+- Runtime: SSR via TanStack Start, Cloudflare Workers (produção), Vite dev
 
-### 2.3 Backup automático
-**Problema:** Sem backend, não há backups.
-**Solução:** Com o banco ativado, os dados são automaticamente persistidos e replicados.
+### 3. `docs/frontend.md` — documentação de frontend
+- **Roteamento** (`src/routes/`): tabela rota × arquivo × propósito × head/meta
+  - `/` (index), `/dashboard`, `/fixed-costs`, `/products`, `__root`
+- **Design System GAMA V3**
+  - Paleta (verde neon `#88CE11`, dark-first), tokens `--accent`, `--background`, etc.
+  - Tipografia (Poppins, JetBrains Mono) e como o link do Google Fonts é injetado no `__root.tsx`
+  - Utilities customizadas: `.glass-card`, `.glow-md`, `.vol-light`
+  - Regra: **nunca hardcodar cores** — só classes de token
+- **Componentes**
+  - `AppShell`, `AppSidebar`, `MobileNav`, `ThemeToggle`
+  - Wizard de precificação (`src/components/pricer/*`): `StepOne`, `StepTwo`, `StepThree`, `usePricer`, `types`, `BrandHeader`, `OrbBackdrop`, `TopActions`, `Metric`, `StepIndicator`, `CostField`
+  - `ConfirmDelete` (padrão de exclusão)
+  - shadcn/ui em `src/components/ui/*`
+- **Estado global** (`src/lib/store.ts`)
+  - `useSyncExternalStore` + `localStorage` (chave `gama-press-state-v1`)
+  - Tipos: `FixedCost`, `VariableCost`, `Product`, `AppState`
+  - Mutations: `addFixedCost`, `updateFixedCost`, `removeFixedCost`, `upsertProduct`, `removeProduct`, `setMonthlyUnitsTarget`
+- **Lógica de precificação** (`src/lib/pricing.ts`)
+  - Fórmulas: `Preço = (custo + rateio fixo + var fixa) / (1 − (% var + margem)/100)`
+  - `computePricing`, `breakEvenUnits`, helpers, `fmtBRL`, `fmtPct`
+  - Warnings: `ok` / `low` (<10%) / `loss`
+- **Testes**: `src/lib/pricing.test.ts` (Vitest + 14 casos)
+- **Acessibilidade e responsividade**: mobile-first, `MobileNav` fixa, tooltips explicativos, `AlertDialog` para ações destrutivas
 
----
+### 4. `docs/backend.md` — documentação de backend
+- **Estado atual**: 100% client-side (`localStorage`). Sem servidor de dados ainda.
+- **Runtime disponível** (já configurado, ainda não usado)
+  - `src/server.ts` (SSR error wrapper), `src/start.ts` (middleware global de erro)
+  - `src/router.tsx` (`QueryClient` + `getRouter`)
+  - `createServerFn` do TanStack Start — exemplo em `src/lib/api/example.functions.ts`
+- **Plano de migração para Lovable Cloud** (não implementado ainda)
+  - Tabelas: `products`, `fixed_costs`, `user_settings` (uma linha por usuário)
+  - RLS por `auth.uid()` em todas as tabelas
+  - GRANTS obrigatórios (`authenticated`, `service_role`)
+  - Storage: bucket `product-images` (substitui base64 no `localStorage`)
+  - Auth: Email/senha + Google via `lovable.auth.signInWithOAuth`
+  - Rotas protegidas: mover páginas para `src/routes/_authenticated/`
+  - Migração one-shot `localStorage` → Cloud no primeiro login
+- **Segurança**: RLS, nunca expor `SUPABASE_SERVICE_ROLE_KEY`, tabela `user_roles` separada quando papéis forem necessários
 
-## 3. UX/UI Polimento (Médio Impacto)
+### 5. `docs/development.md` — guia para contribuir
+- Fluxo local (bun, hot reload)
+- Convenções de commit
+- Como rodar/estender testes (Vitest + `vitest.config.ts`)
+- Regras do design system (tokens, sem cores literais)
+- Como adicionar uma nova rota / uma nova mutation na store
+- Sync GitHub ↔ Lovable (edições em qualquer lado sincronizam)
 
-### 3.1 Animações de transição entre passos
-**Problema:** Mudança de step é instantânea, sem feedback visual de progresso.
-**Solução:** Animação `fade-up` + slide horizontal suave (Framer Motion ou CSS transitions) entre Step 1 → 2 → 3.
+### 6. `docs/roadmap.md`
+- Cópia enxuta do `.lovable/plan.md`, organizada em Sprints 1–4 (Backend, UX, Polimento, Crescimento)
 
-### 3.2 Loading states e skeletons
-**Problema:** Em rotas futuras com dados remotos, a tela pode ficar em branco.
-**Solução:** Componente `SkeletonCard` e `SkeletonTable` para estados de carregamento.
+### 7. `CONTRIBUTING.md` (raiz, curto)
+- Ponteiro para `docs/development.md`
 
-### 3.3 Empty states ilustrados
-**Problema:** Telas sem dados mostram apenas texto "Nenhum produto cadastrado".
-**Solução:** Ilustrações/ícones grandes + CTA claro (ex: "Cadastrar primeiro produto" com botão de ação).
-
-### 3.4 Toasts de confirmação para ações destrutivas
-**Problema:** Excluir produto ou custo fixo é irreversível e sem confirmação.
-**Solução:** Dialog de confirmação antes de deletar, com destaque em vermelho para ações destrutivas.
-
-### 3.5 Tooltips explicativos nos campos
-**Problema:** Campos como "Rateio de custo fixo (%)" podem não ser intuitivos para iniciantes.
-**Solução:** Ícone de (i) com tooltip explicando o conceito e fórmula usada.
-
-### 3.6 Keyboard navigation
-**Problema:** No wizard de precificação, o usuário precisa clicar em "Avançar" a cada passo.
-**Solução:** Enter no último campo avança o step; Tab navega entre campos de forma lógica.
-
----
-
-## 4. Performance & Técnicas (Médio Impacto)
-
-### 4.1 Virtualização da tabela de produtos
-**Problema:** Com centenas de produtos, a renderização da tabela fica lenta.
-**Solução:** Usar `@tanstack/react-virtual` para renderizar apenas as linhas visíveis.
-
-### 4.2 Debounce nos inputs numéricos
-**Problema:** Cada digito em campos de custo dispara re-renderização imediata.
-**Solução:** Debounce de 300ms nos inputs de preço/custo antes de atualizar o estado.
-
-### 4.3 Code splitting por rota
-**Problema:** O bundle pode crescer conforme novas funcionalidades são adicionadas.
-**Solução:** Garantir que cada rota seja lazy-loaded (TanStack Router já faz parcialmente, mas verificar).
-
-### 4.4 Memoização de cálculos pesados
-**Problema:** `computePricing` é chamado a cada render nos componentes de listagem.
-**Solução:** Usar `useMemo` nos map de produtos e `React.memo` nos cards de estatísticas.
-
----
-
-## 5. SEO & Marketing (Médio Impacto)
-
-### 5.1 Rich snippets / JSON-LD
-**Problema:** A ferramenta não tem marcação estruturada para indexação.
-**Solução:** Adicionar JSON-LD de `SoftwareApplication` na home com rating, category e description.
-
-### 5.2 Open Graph por rota
-**Problema:** O `__root.tsx` define OG genérico; rotas filhas não sobrescrevem `og:image`.
-**Solução:** Cada rota deve definir sua própria `og:title`, `og:description` e eventualmente `og:image`.
-
-### 5.3 Página de landing externa
-**Problema:** O app abre direto no wizard. Sem página de venda/convite para novos usuários.
-**Solução:** Rota `/welcome` ou home alternativa para não-logados com benefícios do app e CTA de cadastro.
+### 8. `.github/pull_request_template.md`
+- Template simples (contexto, mudanças, screenshots, checklist)
 
 ---
 
-## 6. Qualidade de Código & DX (Baixo Impacto, Baixo Esforço)
+## O que **não** vou fazer neste plano
 
-### 6.1 Testes unitários para pricing.ts
-**Problema:** A lógica de precificação é crítica e não tem cobertura de testes.
-**Solução:** Testes para `computePricing`, `breakEvenUnits`, casos de borda (margem 0%, prejuízo, divisão por zero).
-
-### 6.2 Storybook para componentes UI
-**Problema:** Componentes como `glass-card`, `metric`, `cost-field` não têm documentação visual isolada.
-**Solução:** Adicionar Storybook para visualizar estados dos componentes independentemente.
-
-### 6.3 Eslint rule para hardcoded colors
-**Problema:** Ainda há risco de regressão com cores hardcoded.
-**Solução:** Rule customizada ou uso de `tailwindcss/no-arbitrary-value` para bloquear cores literais.
-
-### 6.4 i18n (Internacionalização)
-**Problema:** Todo o app está em português hardcoded.
-**Solução:** Preparar estrutura i18n (ex: `react-i18next`) para futura tradução EN/ES.
+- Não vou ativar Lovable Cloud (backend real) — está listado como Sprint 1 do roadmap, é decisão separada.
+- Não vou mudar código de aplicação. Só documentação.
+- Não vou apagar/renomear o `.lovable/plan.md` (continua sendo o scratchpad de trabalho interno).
 
 ---
 
-## Ordem de Implementação Sugerida
+## Se aprovar
 
-```
-Fase 1 (Quick Wins):
-  → 3.4 Confirmação de exclusão
-  → 3.5 Tooltips explicativos
-  → 1.1 Margem dinâmica no wizard
-  → 6.1 Testes unitários pricing.ts
-
-Fase 2 (Funcionalidades Core):
-  → 1.2 Simulador reverso
-  → 1.5 Filtros e busca
-  → 1.4 Duplicar produto
-  → 3.1 Animações de transição
-
-Fase 3 (Escala & Backend):
-  → 2.1 Migrar para PostgreSQL
-  → 2.2 Autenticação
-  → 1.6 Exportar CSV
-  → 4.1 Virtualização da tabela
-
-Fase 4 (Crescimento):
-  → 5.3 Página de landing
-  → 5.1 JSON-LD
-  → 1.7 Meta de vendas mensais
-  → 6.4 i18n
-```
+Eu crio os 8 arquivos acima em paralelo. Depois disso, se o GitHub já estiver conectado, é só abrir o repo e a documentação inteira já está lá. Se ainda não estiver, me avise que eu te lembro dos 4 passos.
