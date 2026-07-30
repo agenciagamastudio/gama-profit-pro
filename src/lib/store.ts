@@ -26,6 +26,10 @@ export type Product = {
   variableCosts: VariableCost[];
   // optional manual override price (reverse simulator)
   manualPrice?: number;
+  // storage path inside the product-images bucket
+  imagePath?: string;
+  // signed URL for display (derived, never persisted)
+  imageUrl?: string;
 };
 
 export type AppState = {
@@ -34,7 +38,7 @@ export type AppState = {
   monthlyUnitsTarget: number; // for break-even reference
 };
 
-const STORAGE_KEY = "gama-press-state-v1";
+export const LEGACY_STORAGE_KEY = "gama-press-state-v1";
 
 const initial: AppState = {
   fixedCosts: [],
@@ -42,24 +46,28 @@ const initial: AppState = {
   monthlyUnitsTarget: 100,
 };
 
-function load(): AppState {
-  if (typeof window === "undefined") return initial;
+/** Reads data left over from the pre-cloud (localStorage) version, if any. */
+export function readLegacyState(): AppState | null {
+  if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return initial;
-    return { ...initial, ...JSON.parse(raw) };
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = { ...initial, ...JSON.parse(raw) } as AppState;
+    if (!parsed.fixedCosts?.length && !parsed.products?.length) return null;
+    return parsed;
   } catch {
-    return initial;
+    return null;
   }
 }
 
-let state: AppState = load();
+export function clearLegacyState() {
+  if (typeof window !== "undefined") localStorage.removeItem(LEGACY_STORAGE_KEY);
+}
+
+let state: AppState = initial;
 const listeners = new Set<() => void>();
 
-function persist() {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+function emit() {
   listeners.forEach((l) => l());
 }
 
@@ -71,9 +79,19 @@ export const store = {
   },
   setState: (updater: (s: AppState) => AppState) => {
     state = updater(state);
-    persist();
+    emit();
   },
 };
+
+export function hydrateStore(next: AppState) {
+  state = { ...initial, ...next };
+  emit();
+}
+
+export function resetStore() {
+  state = initial;
+  emit();
+}
 
 export function useStore<T>(selector: (s: AppState) => T): T {
   return useSyncExternalStore(
@@ -83,32 +101,33 @@ export function useStore<T>(selector: (s: AppState) => T): T {
   );
 }
 
-export const uid = () => Math.random().toString(36).slice(2, 10);
+export const uid = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-// ---------- mutations ----------
-export const addFixedCost = (fc: Omit<FixedCost, "id">) =>
-  store.setState((s) => ({ ...s, fixedCosts: [...s.fixedCosts, { ...fc, id: uid() }] }));
-
-export const updateFixedCost = (id: string, patch: Partial<FixedCost>) =>
+// ---------- local mutations (persistence is handled by cloud-store) ----------
+export const applyFixedCost = (fc: FixedCost) =>
   store.setState((s) => ({
     ...s,
-    fixedCosts: s.fixedCosts.map((f) => (f.id === id ? { ...f, ...patch } : f)),
+    fixedCosts: s.fixedCosts.some((f) => f.id === fc.id)
+      ? s.fixedCosts.map((f) => (f.id === fc.id ? fc : f))
+      : [...s.fixedCosts, fc],
   }));
 
-export const removeFixedCost = (id: string) =>
+export const applyRemoveFixedCost = (id: string) =>
   store.setState((s) => ({ ...s, fixedCosts: s.fixedCosts.filter((f) => f.id !== id) }));
 
-export const upsertProduct = (p: Product) =>
-  store.setState((s) => {
-    const exists = s.products.some((x) => x.id === p.id);
-    return {
-      ...s,
-      products: exists ? s.products.map((x) => (x.id === p.id ? p : x)) : [...s.products, p],
-    };
-  });
+export const applyProduct = (p: Product) =>
+  store.setState((s) => ({
+    ...s,
+    products: s.products.some((x) => x.id === p.id)
+      ? s.products.map((x) => (x.id === p.id ? p : x))
+      : [...s.products, p],
+  }));
 
-export const removeProduct = (id: string) =>
+export const applyRemoveProduct = (id: string) =>
   store.setState((s) => ({ ...s, products: s.products.filter((p) => p.id !== id) }));
 
-export const setMonthlyUnitsTarget = (n: number) =>
+export const applyMonthlyUnitsTarget = (n: number) =>
   store.setState((s) => ({ ...s, monthlyUnitsTarget: n }));

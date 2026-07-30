@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { uid, upsertProduct } from "@/lib/store";
+import { uid } from "@/lib/store";
+import { upsertProduct, uploadProductImage } from "@/lib/cloud-store";
 import { CATEGORIES, DEFAULT_MARGIN, MAX_MARGIN, MIN_MARGIN, type Costs } from "./types";
 
 export function usePricer() {
@@ -28,8 +29,13 @@ export function usePricer() {
     setMargin(DEFAULT_MARGIN);
   };
 
-  const save = () => {
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    const imagePath = image ? await uploadProductImage(image) : undefined;
     upsertProduct({
+      imagePath,
       id: uid(),
       name: name || "Produto sem nome",
       sku: "",
@@ -47,6 +53,7 @@ export function usePricer() {
       ],
     });
     toast.success("Produto salvo no catálogo!");
+    setSaving(false);
     reset();
   };
 
@@ -58,6 +65,6 @@ export function usePricer() {
     image, setImage,
     margin, setMargin,
     totalCost, suggested, profit,
-    reset, save,
+    reset, save, saving,
   };
 }
