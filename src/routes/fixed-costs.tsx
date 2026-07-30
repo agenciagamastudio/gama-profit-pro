@@ -4,7 +4,8 @@ import { AppShell } from "@/components/app-shell";
 import { ConfirmDelete } from "@/components/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { addFixedCost, removeFixedCost, updateFixedCost, useStore } from "@/lib/store";
+import { useStore } from "@/lib/store";
+import { addFixedCost, removeFixedCost, updateFixedCost } from "@/lib/cloud-store";
 import { fmtBRL, sumFixedCosts } from "@/lib/pricing";
 import { Plus, Trash2 } from "lucide-react";
 
