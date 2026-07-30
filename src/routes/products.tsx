@@ -18,14 +18,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  removeProduct,
-  uid,
-  upsertProduct,
-  useStore,
-  type Product,
-  type VariableCost,
-} from "@/lib/store";
+import { uid, useStore, type Product, type VariableCost } from "@/lib/store";
+import { removeProduct, upsertProduct } from "@/lib/cloud-store";
+
 import { computePricing, fmtBRL, fmtPct, sumFixedCosts } from "@/lib/pricing";
 import { Plus, Trash2, Pencil, AlertTriangle, Check, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
