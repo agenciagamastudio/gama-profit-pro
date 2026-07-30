@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "sdk_version": "0.25.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "gama-profit-pro",
+      "version": "0.1.0",
+      "title": "Gama Profit Pro"
+    },
+    "tools": [
+      {
+        "name": "calculate_price",
+        "title": "Calcular preço de venda",
+        "description": "Calcula o preço de venda sugerido, lucro líquido e margem real de um produto a partir do custo, custos variáveis, rateio de custo fixo e margem desejada.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "costPrice": {
+              "type": "number",
+              "description": "Custo direto do produto (R$)."
+            },
+            "desiredMargin": {
+              "type": "number",
+              "description": "Margem de lucro desejada em % (ex: 30)."
+            },
+            "totalFixedCosts": {
+              "default": 0,
+              "description": "Total de custos fixos mensais da operação (R$).",
+              "type": "number"
+            },
+            "fixedAllocationPct": {
+              "default": 0,
+              "description": "Percentual dos custos fixos rateado para este produto (ex: 5).",
+              "type": "number"
+            },
+            "variablePercentCosts": {
+              "default": 0,
+              "description": "Soma dos custos variáveis percentuais, como taxas de marketplace (ex: 12).",
+              "type": "number"
+            },
+            "variableFixedCosts": {
+              "default": 0,
+              "description": "Soma dos custos variáveis em valor fixo por venda, como frete (R$).",
+              "type": "number"
+            },
+            "manualPrice": {
+              "default": null,
+              "description": "Preço manual para simulação reversa. Use null para usar o preço sugerido.",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "costPrice",
+            "desiredMargin"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "check_margin",
+        "title": "Verificar margem de um preço",
+        "description": "Simulação reversa: dado um preço de venda e o custo total por unidade, retorna o lucro líquido, a margem real em % e um alerta de saúde da margem.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "price": {
+              "type": "number",
+              "description": "Preço de venda praticado (R$)."
+            },
+            "unitCost": {
+              "type": "number",
+              "description": "Custo total por unidade, incluindo rateios (R$)."
+            },
+            "variablePercentCosts": {
+              "default": 0,
+              "description": "Custos variáveis percentuais sobre o preço, como taxas (ex: 12).",
+              "type": "number"
+            }
+          },
+          "required": [
+            "price",
+            "unitCost"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "break_even_units",
+        "title": "Calcular ponto de equilíbrio",
+        "description": "Calcula quantas unidades precisam ser vendidas por mês para cobrir os custos fixos, dada a contribuição média por unidade.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "totalFixedCosts": {
+              "type": "number",
+              "description": "Total de custos fixos mensais (R$)."
+            },
+            "avgUnitContribution": {
+              "type": "number",
+              "description": "Lucro líquido médio por unidade vendida (R$)."
+            }
+          },
+          "required": [
+            "totalFixedCosts",
+            "avgUnitContribution"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
