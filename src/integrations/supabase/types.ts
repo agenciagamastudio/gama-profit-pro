@@ -14,7 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fixed_costs: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      product_variable_costs: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          product_id: string
+          type: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          product_id: string
+          type?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          product_id?: string
+          type?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variable_costs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          cost_price: number
+          created_at: string
+          desired_margin: number
+          fixed_allocation_pct: number
+          id: string
+          image_url: string | null
+          manual_price: number | null
+          name: string
+          sku: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          cost_price?: number
+          created_at?: string
+          desired_margin?: number
+          fixed_allocation_pct?: number
+          id?: string
+          image_url?: string | null
+          manual_price?: number | null
+          name?: string
+          sku?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          cost_price?: number
+          created_at?: string
+          desired_margin?: number
+          fixed_allocation_pct?: number
+          id?: string
+          image_url?: string | null
+          manual_price?: number | null
+          name?: string
+          sku?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          imported_local_data: boolean
+          monthly_units_target: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          imported_local_data?: boolean
+          monthly_units_target?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          imported_local_data?: boolean
+          monthly_units_target?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
