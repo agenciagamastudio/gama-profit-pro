@@ -1,102 +1,62 @@
-# Plano — Documentação completa (Frontend + Backend) + GitHub
+# Colocar o Gama PRESS no ar: banco de dados, login Google e checagem final
 
-## Sobre "criar no GitHub"
+Hoje o app guarda tudo no navegador (`localStorage`), sem contas de usuário. Para publicar de verdade, os dados precisam ficar na nuvem, cada pessoa com seu próprio catálogo, e o acesso protegido por login.
 
-Eu não tenho um botão para publicar num repositório do GitHub por conta própria. O que o Lovable faz é **sincronização bidirecional automática** com um repo GitHub que você conecta uma única vez:
+## 1. Ativar o backend (Lovable Cloud)
 
-1. Menu **+** (canto inferior esquerdo do chat) → **GitHub** → **Connect project**
-2. Autorizar o app Lovable no GitHub
-3. Escolher a organização/conta
-4. Clicar **Create Repository**
+Banco de dados PostgreSQL + autenticação + armazenamento de imagens, sem conta externa.
 
-A partir daí, **qualquer arquivo que eu criar no projeto** (incluindo a documentação abaixo) é enviado automaticamente para o repo. Não é preciso commit/push manual.
+Tabelas (todas com `user_id` e proteção por linha, cada usuário só enxerga o que é dele):
 
-Portanto, meu plano é: **criar toda a documentação como arquivos no projeto**. Se você já conectou o GitHub, ela aparece lá em segundos. Se ainda não conectou, siga os 4 passos acima uma vez e o histórico inteiro (docs + código) sobe.
+- `profiles` — nome, empresa, avatar; criada automaticamente no cadastro
+- `fixed_costs` — nome, valor, categoria
+- `products` — nome, SKU, categoria, custo, margem desejada, % de rateio fixo, preço manual, URL da foto
+- `product_variable_costs` — custos variáveis por produto (percentual ou valor fixo)
+- `user_settings` — meta mensal de unidades
 
----
+Bucket de imagens `product-images`, com pasta por usuário (substitui as fotos em base64 de hoje).
 
-## Arquivos de documentação que vou criar
+## 2. Login com Google + e-mail/senha
 
-### 1. `README.md` (raiz) — porta de entrada
-- Descrição curta do Gama PRESS + screenshot/print da tela
-- Stack (TanStack Start, React 19, Vite 7, Tailwind v4, shadcn/ui, Radix)
-- Como rodar localmente (`bun install`, `bun dev`, `bun test`)
-- Scripts disponíveis
-- Estrutura de pastas (árvore resumida)
-- Links para os docs detalhados em `docs/`
+- Rota pública `/auth` com abas Entrar / Criar conta e botão "Continuar com Google"
+- Google ativado no provedor gerenciado da Lovable Cloud
+- Rotas do app (início, dashboard, produtos, custos fixos) passam para uma área protegida: quem não está logado vai para `/auth`
+- Cabeçalho passa a mostrar o usuário logado com opção de sair
+- Página de recuperação de senha (`/reset-password`)
 
-### 2. `docs/architecture.md` — visão geral
-- Diagrama ASCII do fluxo (rotas → componentes → store → pricing)
-- Convenções: file-based routing, tokens semânticos, `mem://` de memórias
-- Runtime: SSR via TanStack Start, Cloudflare Workers (produção), Vite dev
+## 3. Migrar os dados atuais
 
-### 3. `docs/frontend.md` — documentação de frontend
-- **Roteamento** (`src/routes/`): tabela rota × arquivo × propósito × head/meta
-  - `/` (index), `/dashboard`, `/fixed-costs`, `/products`, `__root`
-- **Design System GAMA V3**
-  - Paleta (verde neon `#88CE11`, dark-first), tokens `--accent`, `--background`, etc.
-  - Tipografia (Poppins, JetBrains Mono) e como o link do Google Fonts é injetado no `__root.tsx`
-  - Utilities customizadas: `.glass-card`, `.glow-md`, `.vol-light`
-  - Regra: **nunca hardcodar cores** — só classes de token
-- **Componentes**
-  - `AppShell`, `AppSidebar`, `MobileNav`, `ThemeToggle`
-  - Wizard de precificação (`src/components/pricer/*`): `StepOne`, `StepTwo`, `StepThree`, `usePricer`, `types`, `BrandHeader`, `OrbBackdrop`, `TopActions`, `Metric`, `StepIndicator`, `CostField`
-  - `ConfirmDelete` (padrão de exclusão)
-  - shadcn/ui em `src/components/ui/*`
-- **Estado global** (`src/lib/store.ts`)
-  - `useSyncExternalStore` + `localStorage` (chave `gama-press-state-v1`)
-  - Tipos: `FixedCost`, `VariableCost`, `Product`, `AppState`
-  - Mutations: `addFixedCost`, `updateFixedCost`, `removeFixedCost`, `upsertProduct`, `removeProduct`, `setMonthlyUnitsTarget`
-- **Lógica de precificação** (`src/lib/pricing.ts`)
-  - Fórmulas: `Preço = (custo + rateio fixo + var fixa) / (1 − (% var + margem)/100)`
-  - `computePricing`, `breakEvenUnits`, helpers, `fmtBRL`, `fmtPct`
-  - Warnings: `ok` / `low` (<10%) / `loss`
-- **Testes**: `src/lib/pricing.test.ts` (Vitest + 14 casos)
-- **Acessibilidade e responsividade**: mobile-first, `MobileNav` fixa, tooltips explicativos, `AlertDialog` para ações destrutivas
+Na primeira entrada com conta, se houver dados salvos no navegador, aparece um aviso: "Encontramos produtos e custos salvos neste dispositivo. Importar para sua conta?" — importa uma única vez e marca como concluído.
 
-### 4. `docs/backend.md` — documentação de backend
-- **Estado atual**: 100% client-side (`localStorage`). Sem servidor de dados ainda.
-- **Runtime disponível** (já configurado, ainda não usado)
-  - `src/server.ts` (SSR error wrapper), `src/start.ts` (middleware global de erro)
-  - `src/router.tsx` (`QueryClient` + `getRouter`)
-  - `createServerFn` do TanStack Start — exemplo em `src/lib/api/example.functions.ts`
-- **Plano de migração para Lovable Cloud** (não implementado ainda)
-  - Tabelas: `products`, `fixed_costs`, `user_settings` (uma linha por usuário)
-  - RLS por `auth.uid()` em todas as tabelas
-  - GRANTS obrigatórios (`authenticated`, `service_role`)
-  - Storage: bucket `product-images` (substitui base64 no `localStorage`)
-  - Auth: Email/senha + Google via `lovable.auth.signInWithOAuth`
-  - Rotas protegidas: mover páginas para `src/routes/_authenticated/`
-  - Migração one-shot `localStorage` → Cloud no primeiro login
-- **Segurança**: RLS, nunca expor `SUPABASE_SERVICE_ROLE_KEY`, tabela `user_roles` separada quando papéis forem necessários
+## 4. Trocar o armazenamento local pelo banco
 
-### 5. `docs/development.md` — guia para contribuir
-- Fluxo local (bun, hot reload)
-- Convenções de commit
-- Como rodar/estender testes (Vitest + `vitest.config.ts`)
-- Regras do design system (tokens, sem cores literais)
-- Como adicionar uma nova rota / uma nova mutation na store
-- Sync GitHub ↔ Lovable (edições em qualquer lado sincronizam)
+O `store.ts` (localStorage) é substituído por leitura/escrita no banco com cache e atualização automática das telas. Toda a lógica de precificação (`pricing.ts`) e os componentes do assistente continuam iguais — só muda de onde vêm os dados.
 
-### 6. `docs/roadmap.md`
-- Cópia enxuta do `.lovable/plan.md`, organizada em Sprints 1–4 (Backend, UX, Polimento, Crescimento)
+## 5. Revisão antes de publicar
 
-### 7. `CONTRIBUTING.md` (raiz, curto)
-- Ponteiro para `docs/development.md`
+- Rodar os testes de precificação existentes e o build de produção
+- Conferir cada tela logado e deslogado, no celular e no desktop (erros de renderização no servidor já apareceram antes neste projeto)
+- Estados vazios e de carregamento nas listas
+- Títulos e descrições próprios em cada página (SEO/compartilhamento)
+- Atualizar as dependências com alerta crítico de segurança (`@tanstack/react-router`, `@tanstack/react-start`, `@tanstack/router-plugin`) e rodar o scan de novo
+- Rodar o scan de segurança do backend após criar as tabelas
+- Atualizar a documentação em `docs/backend.md` com o esquema real
+- Publicar
 
-### 8. `.github/pull_request_template.md`
-- Template simples (contexto, mudanças, screenshots, checklist)
+## Detalhes técnicos
 
----
+- Acesso ao banco via server functions do TanStack Start (`createServerFn` + `requireSupabaseAuth`), nunca chave de serviço no navegador
+- RLS em todas as tabelas com política `auth.uid() = user_id`, mais os GRANTs necessários
+- Área protegida via layout `src/routes/_authenticated/`; `/auth` e `/reset-password` públicas
+- Login Google pelo broker da Lovable (`lovable.auth.signInWithOAuth`), com `redirect_uri` em rota pública
+- Tipos gerados do banco substituem os tipos manuais de `src/lib/store.ts`
+- MCP em `/mcp` continua público e sem dados de usuário (só cálculo)
 
-## O que **não** vou fazer neste plano
+## Ordem de execução
 
-- Não vou ativar Lovable Cloud (backend real) — está listado como Sprint 1 do roadmap, é decisão separada.
-- Não vou mudar código de aplicação. Só documentação.
-- Não vou apagar/renomear o `.lovable/plan.md` (continua sendo o scratchpad de trabalho interno).
-
----
-
-## Se aprovar
-
-Eu crio os 8 arquivos acima em paralelo. Depois disso, se o GitHub já estiver conectado, é só abrir o repo e a documentação inteira já está lá. Se ainda não estiver, me avise que eu te lembro dos 4 passos.
+1. Ativar Cloud e criar o esquema
+2. Autenticação + tela de login e proteção de rotas
+3. Camada de dados (server functions) e substituição do store
+4. Upload de imagens
+5. Importação dos dados locais
+6. Revisão, correções de segurança e publicação
