@@ -9,7 +9,7 @@ import { StepTwo } from "@/components/pricer/step-two";
 import { TopActions } from "@/components/pricer/top-actions";
 import { usePricer } from "@/components/pricer/use-pricer";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Gama PRESS — Qual produto vamos vender hoje?" },

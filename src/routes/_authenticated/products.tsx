@@ -26,7 +26,7 @@ import { Plus, Trash2, Pencil, AlertTriangle, Check, HelpCircle } from "lucide-r
 import { cn } from "@/lib/utils";
 
 
-export const Route = createFileRoute("/products")({
+export const Route = createFileRoute("/_authenticated/products")({
   head: () => ({ meta: [{ title: "Produtos — Gama PRESS" }] }),
   component: ProductsPage,
 });

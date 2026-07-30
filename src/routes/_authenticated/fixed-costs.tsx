@@ -10,7 +10,7 @@ import { fmtBRL, sumFixedCosts } from "@/lib/pricing";
 import { Plus, Trash2 } from "lucide-react";
 
 
-export const Route = createFileRoute("/fixed-costs")({
+export const Route = createFileRoute("/_authenticated/fixed-costs")({
   head: () => ({ meta: [{ title: "Custos Fixos — Gama PRESS" }] }),
   component: FixedCostsPage,
 });

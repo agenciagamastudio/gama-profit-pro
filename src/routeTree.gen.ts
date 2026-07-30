@@ -9,38 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProductsRouteImport } from './routes/products'
 import { Route as McpRouteImport } from './routes/mcp'
-import { Route as FixedCostsRouteImport } from './routes/fixed-costs'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
+import { Route as AuthenticatedFixedCostsRouteImport } from './routes/_authenticated/fixed-costs'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FixedCostsRoute = FixedCostsRouteImport.update({
-  id: '/fixed-costs',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProductsRoute = AuthenticatedProductsRouteImport.update({
+  id: '/_authenticated/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedFixedCostsRoute = AuthenticatedFixedCostsRouteImport.update({
+  id: '/_authenticated/fixed-costs',
   path: '/fixed-costs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/_authenticated/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -63,89 +63,82 @@ const Char91DotmcpChar93InvokeToolToolRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/fixed-costs': typeof FixedCostsRoute
   '/mcp': typeof McpRoute
-  '/products': typeof ProductsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/fixed-costs': typeof AuthenticatedFixedCostsRoute
+  '/products': typeof AuthenticatedProductsRoute
+  '/': typeof AuthenticatedIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/fixed-costs': typeof FixedCostsRoute
   '/mcp': typeof McpRoute
-  '/products': typeof ProductsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/fixed-costs': typeof AuthenticatedFixedCostsRoute
+  '/products': typeof AuthenticatedProductsRoute
+  '/': typeof AuthenticatedIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/fixed-costs': typeof FixedCostsRoute
   '/mcp': typeof McpRoute
-  '/products': typeof ProductsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/fixed-costs': typeof AuthenticatedFixedCostsRoute
+  '/_authenticated/products': typeof AuthenticatedProductsRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/dashboard'
-    | '/fixed-costs'
     | '/mcp'
-    | '/products'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/dashboard'
+    | '/fixed-costs'
+    | '/products'
+    | '/'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/dashboard'
-    | '/fixed-costs'
     | '/mcp'
-    | '/products'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/dashboard'
+    | '/fixed-costs'
+    | '/products'
+    | '/'
     | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
-    | '/'
-    | '/dashboard'
-    | '/fixed-costs'
     | '/mcp'
-    | '/products'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/fixed-costs'
+    | '/_authenticated/products'
+    | '/_authenticated/'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  FixedCostsRoute: typeof FixedCostsRoute
   McpRoute: typeof McpRoute
-  ProductsRoute: typeof ProductsRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFixedCostsRoute: typeof AuthenticatedFixedCostsRoute
+  AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -153,25 +146,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fixed-costs': {
-      id: '/fixed-costs'
-      path: '/fixed-costs'
-      fullPath: '/fixed-costs'
-      preLoaderRoute: typeof FixedCostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/products': {
+      id: '/_authenticated/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof AuthenticatedProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/fixed-costs': {
+      id: '/_authenticated/fixed-costs'
+      path: '/fixed-costs'
+      fullPath: '/fixed-costs'
+      preLoaderRoute: typeof AuthenticatedFixedCostsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -199,14 +199,14 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  FixedCostsRoute: FixedCostsRoute,
   McpRoute: McpRoute,
-  ProductsRoute: ProductsRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFixedCostsRoute: AuthenticatedFixedCostsRoute,
+  AuthenticatedProductsRoute: AuthenticatedProductsRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport

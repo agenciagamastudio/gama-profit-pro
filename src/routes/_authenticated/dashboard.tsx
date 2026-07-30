@@ -5,7 +5,7 @@ import { computePricing, fmtBRL, fmtPct, sumFixedCosts } from "@/lib/pricing";
 import { TrendingUp, TrendingDown, Receipt, Package, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Gama PRESS" },
